@@ -4,9 +4,7 @@ I've been wanting to do this project for a long time. And finally, as of 03/01/2
 
 ## What's this about?
 
-Well, this is a game where you play battleship against a bot. That's it.
-
-The whole game algorithms and logic are made with zero dependencies. With this project, I aim to gain a deeper understanding about Spring Boot, as well as the Java programming language itself, including object-oriented design. Additionally, it also helps me to improve my problem solving skills as those are one of the most essential skills a developer should have.
+Well, this is a game where you play single-player battleship. Instead of the usual guess-where-your-opponents-ships-are, the ships will be hidden from you and you have to guess where the hidden ships are with the least number of guesses possible.
 
 ## Tech Stack
 
