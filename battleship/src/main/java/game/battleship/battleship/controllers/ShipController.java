@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import game.battleship.battleship.board.Board;
 import game.battleship.battleship.board.Coord;
 import game.battleship.battleship.exceptions.InvalidShipLocException;
 import game.battleship.battleship.ship.Battleship;
@@ -31,8 +32,9 @@ public class ShipController {
 
     @PostMapping
     @RequestMapping(path = "api/ship", method = RequestMethod.POST)
-    public ResponseEntity<?> setShips(@RequestBody List<String> loc) {
-        // validate input (string to enum)
+    public ResponseEntity<?> setShip(@RequestBody List<String> loc) {
+        // validate input (string is valid, when converted to enum doesn't cause an
+        // exception)
         List<Coord> locCoord = new ArrayList<>();
         for (String l : loc) {
             try {
@@ -42,11 +44,12 @@ public class ShipController {
             }
         }
 
-        // set ships to a certain location on the board
-        Ship newShip = new Battleship("new ship");
+        // set ship to a certain location on the board
+        Ship newShip = new Battleship("GSX-RR");
 
         try {
             newShip.setLoc(locCoord);
+            // Board.insertShip(newShip);
         } catch (InvalidShipLocException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }

@@ -11,6 +11,10 @@ import game.battleship.battleship.exceptions.InvalidShipLocException;
 public class Battleship extends Ship {
     public static final int SIZE = 4;
 
+    public Battleship() {
+        super("Battleship");
+    }
+
     public Battleship(String name) {
         super(name);
     }
@@ -19,12 +23,14 @@ public class Battleship extends Ship {
     public void setLoc(List<Coord> loc) throws InvalidShipLocException {
         // size 4
         if (loc.size() != SIZE) {
-            throw new InvalidShipLocException();
+            throw new InvalidShipLocException("Invalid ship location - " + loc);
         }
 
         // check if valid
         boolean isValidLoc = this.validateLoc(loc);
-        System.out.println(isValidLoc);
+        if (!isValidLoc) {
+            throw new InvalidShipLocException("Invalid ship location - " + loc);
+        }
 
         this.loc = loc;
     }
