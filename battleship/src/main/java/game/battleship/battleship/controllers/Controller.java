@@ -36,6 +36,12 @@ public class Controller {
         return ResponseEntity.ok().body(Board.getGameBoard());
     }
 
+    @GetMapping
+    @RequestMapping(path = "api/board", method = RequestMethod.GET)
+    public ResponseEntity<?> getBoard() {
+        return ResponseEntity.ok().body(Board.getGameBoard());
+    }
+
     @PostMapping
     @RequestMapping(path = "api/ship", method = RequestMethod.POST)
     public ResponseEntity<?> setShip(@RequestBody ShipInput input) {

@@ -14,25 +14,25 @@ public class Board {
     private static List<String> ships = new ArrayList<>();
     // all the coordinates where a ship is located
     // boolean value indicates whether the ship's been hit or not
-    private static HashMap<Coord, Boolean> shipLocs = new HashMap<>();
+    private static HashMap<Coord, Boolean> shipCoords = new HashMap<>();
     // all the coordinates where a ship is not located
     // boolean value indicates whether that location's been fired or not
-    private static HashMap<Coord, Boolean> nonShipLocs = new HashMap<>();
+    private static HashMap<Coord, Boolean> nonShipCoords = new HashMap<>();
 
-    private static Loc[][] gameBoard = new Loc[SIZE][SIZE];
+    private static Loc[] gameBoard = new Loc[SIZE * SIZE];
     // number of moves made by the player
     private static int moves = 0;
 
     // getter and setter
-    public static HashMap<Coord, Boolean> getShipLocs() {
-        return shipLocs;
+    public static HashMap<Coord, Boolean> getShipcoords() {
+        return shipCoords;
     }
 
-    public static HashMap<Coord, Boolean> getNonShipLocs() {
-        return nonShipLocs;
+    public static HashMap<Coord, Boolean> getNonShipcoords() {
+        return nonShipCoords;
     }
 
-    public static Loc[][] getGameBoard() {
+    public static Loc[] getGameBoard() {
         return gameBoard;
     }
 
@@ -44,51 +44,45 @@ public class Board {
     // initialise or reset game
     public static void restart() {
         // reset game board
-        int j = 0;
-
+        int i = 0;
         for (Coord coord : Coord.values()) {
-            int i = coord.toString().charAt(0) - 'A';
-            gameBoard[i][j] = new Loc(coord);
-
-            if (j + 1 >= SIZE) {
-                j = 0;
-            } else {
-                j++;
-            }
+            gameBoard[i] = new Loc(coord);
+            i++;
         }
 
         // reset move counter
         moves = 0;
     }
 
-    // visualise board
-    public static String visualiseBoard() {
-        System.out.println(shipLocs);
-        // for (int i = 0; i < Board.SIZE; i++) {
-        // for (int j = 0; j < Board.SIZE; j++) {
-
-        // }
-        // }
-
-        return "";
+    // update location status on game board
+    private static void updateBoard(Coord coord, LocStatus newStatus) {
+        for (int i = 0; i < gameBoard.length; i++) {
+            if (gameBoard[i].getCoord().equals(coord)) {
+                gameBoard[i].setLocStatus(newStatus);
+                break;
+            }
+        }
     }
 
     // insert new ship into the board
     public static void insertShip(Ship ship) throws InvalidShipLocException, InvalidShipTypeException {
-        List<Coord> locs = ship.getLoc();
+        List<Coord> coords = ship.getLoc();
 
         // ensure the ship type is not a duplicate
         if (ships.contains(ship.getClass().getSimpleName())) {
             throw new InvalidShipTypeException(ship.name + " is already there!");
         }
 
-        for (Coord l : locs) {
+        for (Coord l : coords) {
             // ensure the ship does not occupy the place that's already occupied
-            if (shipLocs.get(l) != null) {
+            if (shipCoords.get(l) != null) {
                 throw new InvalidShipLocException(
-                        "Invalid ship location - " + locs + " - " + "location is already occupied");
+                        "Invalid ship location - " + coords + " - " + "location is already occupied");
             }
-            shipLocs.put(l, false);
+            shipCoords.put(l, false);
+
+            // all good -- now update loc status on the game board
+            updateBoard(l, LocStatus.OCCUPIED);
         }
 
         ships.add(ship.getClass().getSimpleName());
@@ -96,8 +90,8 @@ public class Board {
 
     // fire at a coord location
     public static void fire(Coord loc) {
-        Boolean hitShip = shipLocs.get(loc);
-        Boolean missShip = nonShipLocs.get(loc);
+        Boolean hitShip = shipCoords.get(loc);
+        Boolean missShip = nonShipCoords.get(loc);
 
         if (hitShip) {
 
