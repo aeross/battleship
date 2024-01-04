@@ -91,6 +91,14 @@ public class Controller {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @GetMapping
+    @RequestMapping(path = "api/fire", method = RequestMethod.POST)
+    public ResponseEntity<?> fire(@RequestBody FireInput input) {
+        Coord coord = Coord.valueOf(input.getCoord());
+        Board.fire(coord);
+        return ResponseEntity.ok().body(Board.getGameBoard());
+    }
 }
 
 /**
@@ -114,5 +122,20 @@ class ShipInput {
 
     public void setType(String type) {
         this.type = type;
+    }
+}
+
+/**
+ * Input for POST api/fire request.
+ */
+class FireInput {
+    private String coord;
+
+    public String getCoord() {
+        return coord;
+    }
+
+    public void setCoord(String coord) {
+        this.coord = coord;
     }
 }

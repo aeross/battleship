@@ -89,12 +89,7 @@ public class Board {
     }
 
     // fire at a coord location
-    public static void fire(Coord loc) {
-        Boolean hitShip = shipCoords.get(loc);
-        Boolean missShip = nonShipCoords.get(loc);
-
-        if (hitShip) {
-
-        }
+    public static void fire(Coord coord) {
+        System.out.println(coord);
     }
 }
