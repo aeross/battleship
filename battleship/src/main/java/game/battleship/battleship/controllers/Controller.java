@@ -22,14 +22,18 @@ import game.battleship.battleship.ship.Destroyer;
 import game.battleship.battleship.ship.Ship;
 import game.battleship.battleship.ship.Submarine;
 
+/**
+ * The controller. Two endpoints here:
+ * GET api/board -> get current board
+ * POST api/ship -> place a new ship into the battlefield
+ */
 @RestController
-public class ShipController {
+public class Controller {
     @GetMapping
-    @RequestMapping(path = "api/ship", method = RequestMethod.GET)
-    public List<Ship> getShips() {
-        return List.of(
-                new Battleship("Jackie"),
-                new Battleship("Bob"));
+    @RequestMapping(path = "api/start", method = RequestMethod.GET)
+    public ResponseEntity<?> start() {
+        Board.restart();
+        return ResponseEntity.ok().body(Board.getGameBoard());
     }
 
     @PostMapping
@@ -72,7 +76,7 @@ public class ShipController {
             newShip.setLoc(locCoord);
             Board.insertShip(newShip);
 
-            return ResponseEntity.ok().body(Board.getBoard());
+            return ResponseEntity.ok().body(newShip);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (InvalidShipLocException e) {
@@ -83,6 +87,9 @@ public class ShipController {
     }
 }
 
+/**
+ * Input for POST api/ship request.
+ */
 class ShipInput {
     private String type;
     private List<String> loc;

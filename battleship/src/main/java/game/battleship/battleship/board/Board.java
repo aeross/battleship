@@ -12,16 +12,66 @@ public class Board {
     public static final int SIZE = 10;
     // stores all the ships that are already on the board
     private static List<String> ships = new ArrayList<>();
-    // all the coordinates where a ship is located -- boolean value indicates
-    // whether the ship's been hit or not
-    private static HashMap<Coord, Boolean> gameBoard = new HashMap<>();
+    // all the coordinates where a ship is located
+    // boolean value indicates whether the ship's been hit or not
+    private static HashMap<Coord, Boolean> shipLocs = new HashMap<>();
+    // all the coordinates where a ship is not located
+    // boolean value indicates whether that location's been fired or not
+    private static HashMap<Coord, Boolean> nonShipLocs = new HashMap<>();
+
+    private static Loc[][] gameBoard = new Loc[SIZE][SIZE];
+    // number of moves made by the player
+    private static int moves = 0;
 
     // getter and setter
-    public static HashMap<Coord, Boolean> getBoard() {
+    public static HashMap<Coord, Boolean> getShipLocs() {
+        return shipLocs;
+    }
+
+    public static HashMap<Coord, Boolean> getNonShipLocs() {
+        return nonShipLocs;
+    }
+
+    public static Loc[][] getGameBoard() {
         return gameBoard;
     }
 
+    public static int getMoves() {
+        return moves;
+    }
+
     // methods
+    // initialise or reset game
+    public static void restart() {
+        // reset game board
+        int j = 0;
+
+        for (Coord coord : Coord.values()) {
+            int i = coord.toString().charAt(0) - 'A';
+            gameBoard[i][j] = new Loc(coord);
+
+            if (j + 1 >= SIZE) {
+                j = 0;
+            } else {
+                j++;
+            }
+        }
+
+        // reset move counter
+        moves = 0;
+    }
+
+    // visualise board
+    public static String visualiseBoard() {
+        System.out.println(shipLocs);
+        // for (int i = 0; i < Board.SIZE; i++) {
+        // for (int j = 0; j < Board.SIZE; j++) {
+
+        // }
+        // }
+
+        return "";
+    }
 
     // insert new ship into the board
     public static void insertShip(Ship ship) throws InvalidShipLocException, InvalidShipTypeException {
@@ -34,13 +84,23 @@ public class Board {
 
         for (Coord l : locs) {
             // ensure the ship does not occupy the place that's already occupied
-            if (gameBoard.get(l) != null) {
+            if (shipLocs.get(l) != null) {
                 throw new InvalidShipLocException(
                         "Invalid ship location - " + locs + " - " + "location is already occupied");
             }
-            gameBoard.put(l, false);
+            shipLocs.put(l, false);
         }
 
         ships.add(ship.getClass().getSimpleName());
+    }
+
+    // fire at a coord location
+    public static void fire(Coord loc) {
+        Boolean hitShip = shipLocs.get(loc);
+        Boolean missShip = nonShipLocs.get(loc);
+
+        if (hitShip) {
+
+        }
     }
 }
