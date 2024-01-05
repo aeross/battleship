@@ -2,8 +2,11 @@ package game.battleship.battleship.board;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import game.battleship.battleship.exceptions.InvalidFireLocException;
 import game.battleship.battleship.exceptions.InvalidShipLocException;
 import game.battleship.battleship.exceptions.InvalidShipTypeException;
 import game.battleship.battleship.ship.Ship;
@@ -12,24 +15,17 @@ public class Board {
     public static final int SIZE = 10;
     // stores all the ships that are already on the board
     private static List<String> ships = new ArrayList<>();
-    // all the coordinates where a ship is located
-    // boolean value indicates whether the ship's been hit or not
-    private static HashMap<Coord, Boolean> shipCoords = new HashMap<>();
     // all the coordinates where a ship is not located
     // boolean value indicates whether that location's been fired or not
-    private static HashMap<Coord, Boolean> nonShipCoords = new HashMap<>();
+    private static Set<Coord> firedCoords = new HashSet<>();
 
     private static Loc[] gameBoard = new Loc[SIZE * SIZE];
     // number of moves made by the player
     private static int moves = 0;
 
     // getter and setter
-    public static HashMap<Coord, Boolean> getShipcoords() {
-        return shipCoords;
-    }
-
-    public static HashMap<Coord, Boolean> getNonShipcoords() {
-        return nonShipCoords;
+    public static Set<Coord> getFiredCoords() {
+        return firedCoords;
     }
 
     public static Loc[] getGameBoard() {
@@ -54,16 +50,6 @@ public class Board {
         moves = 0;
     }
 
-    // update location status on game board
-    private static void updateBoard(Coord coord, LocStatus newStatus) {
-        for (int i = 0; i < gameBoard.length; i++) {
-            if (gameBoard[i].getCoord().equals(coord)) {
-                gameBoard[i].setLocStatus(newStatus);
-                break;
-            }
-        }
-    }
-
     // insert new ship into the board
     public static void insertShip(Ship ship) throws InvalidShipLocException, InvalidShipTypeException {
         List<Coord> coords = ship.getLoc();
@@ -73,23 +59,40 @@ public class Board {
             throw new InvalidShipTypeException(ship.name + " is already there!");
         }
 
-        for (Coord l : coords) {
-            // ensure the ship does not occupy the place that's already occupied
-            if (shipCoords.get(l) != null) {
-                throw new InvalidShipLocException(
-                        "Invalid ship location - " + coords + " - " + "location is already occupied");
+        for (Coord coord : coords) {
+            for (int i = 0; i < gameBoard.length; i++) {
+                if (gameBoard[i].getCoord().equals(coord)) {
+                    // ensure the ship does not occupy the place that's already occupied
+                    if (gameBoard[i].getLocStatus().equals(LocStatus.EMPTY)) {
+                        gameBoard[i].setLocStatus(LocStatus.OCCUPIED);
+                    } else {
+                        throw new InvalidShipLocException(
+                                "Invalid ship location - " + coords + " - " + "location is already occupied");
+                    }
+                    break;
+                }
             }
-            shipCoords.put(l, false);
-
-            // all good -- now update loc status on the game board
-            updateBoard(l, LocStatus.OCCUPIED);
         }
-
         ships.add(ship.getClass().getSimpleName());
     }
 
     // fire at a coord location
-    public static void fire(Coord coord) {
-        System.out.println(coord);
+    public static void fire(Coord coord) throws InvalidFireLocException {
+        for (int i = 0; i < gameBoard.length; i++) {
+            if (gameBoard[i].getCoord().equals(coord)) {
+                LocStatus locStatus = gameBoard[i].getLocStatus();
+
+                if (locStatus.equals(LocStatus.EMPTY)) {
+                    gameBoard[i].setLocStatus(LocStatus.MISS);
+                } else if (locStatus.equals(LocStatus.OCCUPIED)) {
+                    gameBoard[i].setLocStatus(LocStatus.HIT);
+                } else {
+                    throw new InvalidFireLocException(
+                            "Invalid fire location - " + coord + " - location is already fired");
+                }
+                break;
+            }
+        }
+        moves++;
     }
 }

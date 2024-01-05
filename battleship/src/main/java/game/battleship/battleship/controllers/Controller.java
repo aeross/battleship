@@ -96,7 +96,11 @@ public class Controller {
     @RequestMapping(path = "api/fire", method = RequestMethod.POST)
     public ResponseEntity<?> fire(@RequestBody FireInput input) {
         Coord coord = Coord.valueOf(input.getCoord());
-        Board.fire(coord);
+        try {
+            Board.fire(coord);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
         return ResponseEntity.ok().body(Board.getGameBoard());
     }
 }
