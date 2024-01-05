@@ -67,6 +67,7 @@ public class Board {
     // initialise or reset game
     public static void restart() {
         started = true;
+        allShipsPlaced = false;
 
         // reset game board
         int i = 0;
@@ -123,15 +124,19 @@ public class Board {
     }
 
     // fire at a coord location
-    public static void fire(Coord coord)
+    public static Loc fire(Coord coord)
             throws InvalidFireLocException, GameNotStartedException, InvalidFireException {
         verifyStart();
         if (!allShipsPlaced)
             throw new InvalidFireException();
 
+        Loc hitLoc = gameBoard[0];
         for (int i = 0; i < gameBoard.length; i++) {
-            if (gameBoard[i].getCoord().equals(coord)) {
-                LocStatus locStatus = gameBoard[i].getLocStatus();
+            if (i != 0)
+                hitLoc = gameBoard[i];
+
+            if (hitLoc.getCoord().equals(coord)) {
+                LocStatus locStatus = hitLoc.getLocStatus();
 
                 if (locStatus.equals(LocStatus.EMPTY)) {
                     gameBoard[i].setLocStatus(LocStatus.MISS);
@@ -147,5 +152,7 @@ public class Board {
         }
         moves++;
         checkWin();
+
+        return hitLoc;
     }
 }

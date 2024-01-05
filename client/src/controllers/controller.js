@@ -3,7 +3,7 @@ class Controller {
         const response = await fetch(`${url}/api/start`, {
             method: "POST"
         });
-        return await response.json();
+        return response;
     }
 
     static async placeShip(url, shipType, shipCoords) {
@@ -14,7 +14,25 @@ class Controller {
             headers: { "Content-Type": "application/json" },
             body: requestBody
         });
-        return await response.text();
+        return response;
+    }
+
+    static async confirmPlacement(url) {
+        const response = await fetch(`${url}/api/confirm-placement`, {
+            method: "POST"
+        })
+        return response;
+    }
+
+    static async fire(url, coord) {
+        const requestBody = JSON.stringify({ coord })
+
+        const response = await fetch(`${url}/api/fire`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: requestBody
+        });
+        return response;
     }
 }
 

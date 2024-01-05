@@ -6,8 +6,11 @@ function Battleship({ url }) {
     const [board, setBoard] = useState();
     useEffect(() => {
         (async () => {
-            const board = await Controller.start(url);
-            setBoard(board);
+            const response = await Controller.start(url);
+            if (response.ok) {
+                const board = await response.json();
+                setBoard(board);
+            }
 
             // place all the ships at random
             // we have: "Carrier", "Battleship", "Cruiser", "Submarine", "Destroyer"
@@ -16,13 +19,13 @@ function Battleship({ url }) {
             await Controller.placeShip(url, "Cruiser", ["E1", "E2", "E3"]);
             await Controller.placeShip(url, "Submarine", ["D3", "D4", "D5"]);
             await Controller.placeShip(url, "Destroyer", ["C1", "C2"]);
-
+            await Controller.confirmPlacement(url);
         })();
     }, []);
 
     return (
         <div className="w-full min-h-screen bg-gray-50 flex justify-center items-center">
-            <Board board={board} />
+            <Board url={url} board={board} />
             {/* {console.log(board)} */}
         </div>
     )

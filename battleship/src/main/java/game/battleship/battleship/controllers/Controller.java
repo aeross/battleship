@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import game.battleship.battleship.board.Board;
 import game.battleship.battleship.board.Coord;
+import game.battleship.battleship.board.Loc;
 import game.battleship.battleship.exceptions.BadRequestException;
 import game.battleship.battleship.exceptions.InvalidShipTypeException;
 import game.battleship.battleship.ship.Battleship;
@@ -157,8 +158,8 @@ public class Controller {
     public ResponseEntity<?> fire(@RequestBody FireInput input) {
         Coord coord = Coord.valueOf(input.getCoord());
         try {
-            Board.fire(coord);
-            return ResponseEntity.ok().body(Board.getGameBoard());
+            Loc hitLoc = Board.fire(coord);
+            return ResponseEntity.ok().body(hitLoc);
         } catch (BadRequestException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
