@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import game.battleship.battleship.board.Board;
 import game.battleship.battleship.board.Coord;
-import game.battleship.battleship.exceptions.InvalidShipLocException;
+import game.battleship.battleship.exceptions.BadRequestException;
 import game.battleship.battleship.exceptions.InvalidShipTypeException;
 import game.battleship.battleship.ship.Battleship;
 import game.battleship.battleship.ship.Carrier;
@@ -29,19 +29,78 @@ import game.battleship.battleship.ship.Submarine;
  */
 @RestController
 public class Controller {
-    @GetMapping
-    @RequestMapping(path = "api/start", method = RequestMethod.GET)
-    public ResponseEntity<?> start() {
-        Board.restart();
-        return ResponseEntity.ok().body(Board.getGameBoard());
-    }
-
+    /**
+     * Get the current battlefield condition.
+     */
     @GetMapping
     @RequestMapping(path = "api/board", method = RequestMethod.GET)
     public ResponseEntity<?> getBoard() {
         return ResponseEntity.ok().body(Board.getGameBoard());
     }
 
+    /**
+     * Get the total number of moves (or fires) to the ship a player makes.
+     */
+    @GetMapping
+    @RequestMapping(path = "api/moves", method = RequestMethod.GET)
+    public ResponseEntity<?> getMoves() {
+        return ResponseEntity.ok().body(Board.getMoves());
+    }
+
+    /**
+     * Get the total number of hits to the ship a player makes.
+     */
+    @GetMapping
+    @RequestMapping(path = "api/hits", method = RequestMethod.GET)
+    public ResponseEntity<?> getHits() {
+        return ResponseEntity.ok().body(Board.getHits());
+    }
+
+    /**
+     * Find out whether the game has been started.
+     */
+    @GetMapping
+    @RequestMapping(path = "api/status/is-started", method = RequestMethod.GET)
+    public ResponseEntity<?> getStatusStarted() {
+        return ResponseEntity.ok().body(Board.getStarted());
+    }
+
+    /**
+     * Find out whether all ships have been placed.
+     */
+    @GetMapping
+    @RequestMapping(path = "api/status/is-placed", method = RequestMethod.GET)
+    public ResponseEntity<?> getStatusPlaced() {
+        return ResponseEntity.ok().body(Board.getAllShipsPlaced());
+    }
+
+    /**
+     * Start the game.
+     */
+    @GetMapping
+    @RequestMapping(path = "api/start", method = RequestMethod.POST)
+    public ResponseEntity<?> start() {
+        Board.restart();
+        return ResponseEntity.ok().body(Board.getGameBoard());
+    }
+
+    /**
+     * Confirm all ship placements, allowing a player to fire.
+     */
+    @GetMapping
+    @RequestMapping(path = "api/confirm-placement", method = RequestMethod.POST)
+    public ResponseEntity<?> confirmPlacement() {
+        try {
+            Board.confirmPlacement();
+            return ResponseEntity.ok().body(Board.getGameBoard());
+        } catch (BadRequestException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    /**
+     * Place a new ship into the battlefield.
+     */
     @PostMapping
     @RequestMapping(path = "api/ship", method = RequestMethod.POST)
     public ResponseEntity<?> setShip(@RequestBody ShipInput input) {
@@ -83,25 +142,24 @@ public class Controller {
             Board.insertShip(newShip);
 
             return ResponseEntity.ok().body(newShip);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (InvalidShipLocException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (InvalidShipTypeException e) {
+        } catch (BadRequestException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
+    /**
+     * Allows player to choose a certain location to fire.
+     */
     @GetMapping
     @RequestMapping(path = "api/fire", method = RequestMethod.POST)
     public ResponseEntity<?> fire(@RequestBody FireInput input) {
         Coord coord = Coord.valueOf(input.getCoord());
         try {
             Board.fire(coord);
-        } catch (Exception e) {
+            return ResponseEntity.ok().body(Board.getGameBoard());
+        } catch (BadRequestException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
-        return ResponseEntity.ok().body(Board.getGameBoard());
     }
 }
 

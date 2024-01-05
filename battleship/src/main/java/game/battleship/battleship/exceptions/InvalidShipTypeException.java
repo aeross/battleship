@@ -1,6 +1,6 @@
 package game.battleship.battleship.exceptions;
 
-public class InvalidShipTypeException extends Exception {
+public class InvalidShipTypeException extends BadRequestException {
     public InvalidShipTypeException() {
         super("Invalid ship type");
     }
