@@ -60,6 +60,16 @@ public class Controller {
     }
 
     /**
+     * Get all ships on the battlefield and all the coordinates in which they aren't
+     * hit.
+     */
+    @GetMapping
+    @RequestMapping(path = "api/ships", method = RequestMethod.GET)
+    public ResponseEntity<?> getShips() {
+        return ResponseEntity.ok().body(Board.getShips());
+    }
+
+    /**
      * Find out whether the game has been started.
      */
     @GetMapping

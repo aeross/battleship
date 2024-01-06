@@ -1,7 +1,9 @@
 package game.battleship.battleship.board;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import game.battleship.battleship.exceptions.GameNotStartedException;
 import game.battleship.battleship.exceptions.InvalidFireException;
@@ -15,7 +17,7 @@ public class Board {
     public static final int SIZE = 10;
     private static Loc[] gameBoard = new Loc[SIZE * SIZE];
     // stores all the ships that are already on the board
-    private static List<String> ships = new ArrayList<>();
+    private static Map<String, List<Coord>> ships = new HashMap<>();
     // number of moves made by the player
     private static int moves = 0;
     // number of hits to the ship made by the player
@@ -45,6 +47,10 @@ public class Board {
 
     public static boolean getAllShipsPlaced() {
         return allShipsPlaced;
+    }
+
+    public static Map<String, List<Coord>> getShips() {
+        return ships;
     }
 
     // methods
@@ -81,7 +87,7 @@ public class Board {
         hits = 0;
 
         // reset ships
-        ships = new ArrayList<>();
+        ships = new HashMap<>();
     }
 
     // insert new ship into the board
@@ -94,16 +100,20 @@ public class Board {
         List<Coord> coords = ship.getLoc();
 
         // ensure the ship type is not a duplicate
-        if (ships.contains(ship.getClass().getSimpleName())) {
+        String shipType = ship.getClass().getSimpleName();
+        if (ships.get(shipType) != null) {
             throw new InvalidShipTypeException(ship.name + " is already there!");
         }
 
+        // place ship to a certain location on the board
+        List<Coord> shipPlacement = new ArrayList<>();
         for (Coord coord : coords) {
             for (int i = 0; i < gameBoard.length; i++) {
                 if (gameBoard[i].getCoord().equals(coord)) {
                     // ensure the ship does not occupy the place that's already occupied
                     if (gameBoard[i].getLocStatus().equals(LocStatus.EMPTY)) {
                         gameBoard[i].setLocStatus(LocStatus.OCCUPIED);
+                        shipPlacement.add(coord);
                     } else {
                         throw new InvalidShipLocException(
                                 "Invalid ship location - " + coords + " - " + "location is already occupied");
@@ -112,7 +122,7 @@ public class Board {
                 }
             }
         }
-        ships.add(ship.getClass().getSimpleName());
+        ships.put(shipType, shipPlacement);
     }
 
     // confirm all ship placements
@@ -143,6 +153,12 @@ public class Board {
                 } else if (locStatus.equals(LocStatus.OCCUPIED)) {
                     gameBoard[i].setLocStatus(LocStatus.HIT);
                     hits++;
+
+                    // update the ships as well
+                    Coord hitCoord = hitLoc.getCoord();
+                    for (List<Coord> shipCondition : ships.values()) {
+                        shipCondition.remove(hitCoord);
+                    }
                 } else {
                     throw new InvalidFireLocException(
                             "Invalid fire location - " + coord + " - location is already fired");
