@@ -17,6 +17,32 @@ class Controller {
         return response;
     }
 
+    // get all ships currently on the battlefield (returns an array of strings of ship names)
+    static async getShips(url) {
+        const response = await fetch(`${url}/api/ships`);
+        if (response.ok) {
+            const ships = await response.json();
+            const shipsOutput = {};
+            for (let ship in ships) {
+                // ship is sunk
+                if (!Object.values(ships[ship]).includes(false)) {
+                    shipsOutput[ship] = false;
+                } 
+                // ship is alive
+                else {
+                    shipsOutput[ship] = true;
+                }
+            }
+            return shipsOutput;
+        }
+        return response;
+    }
+
+    static async getBoard(url) {
+        const response = await fetch(`${url}/api/board`);
+        return response;
+    }
+
     static async confirmPlacement(url) {
         const response = await fetch(`${url}/api/confirm-placement`, {
             method: "POST"
