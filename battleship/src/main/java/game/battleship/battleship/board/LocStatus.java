@@ -4,5 +4,6 @@ public enum LocStatus {
     EMPTY,
     OCCUPIED,
     MISS,
-    HIT
+    HIT,
+    SANK
 }

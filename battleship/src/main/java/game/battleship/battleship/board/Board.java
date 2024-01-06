@@ -17,7 +17,7 @@ public class Board {
     public static final int SIZE = 10;
     private static Loc[] gameBoard = new Loc[SIZE * SIZE];
     // stores all the ships that are already on the board
-    private static Map<String, List<Coord>> ships = new HashMap<>();
+    private static Map<String, Map<Coord, Boolean>> ships = new HashMap<>();
     // number of moves made by the player
     private static int moves = 0;
     // number of hits to the ship made by the player
@@ -49,7 +49,7 @@ public class Board {
         return allShipsPlaced;
     }
 
-    public static Map<String, List<Coord>> getShips() {
+    public static Map<String, Map<Coord, Boolean>> getShips() {
         return ships;
     }
 
@@ -106,14 +106,14 @@ public class Board {
         }
 
         // place ship to a certain location on the board
-        List<Coord> shipPlacement = new ArrayList<>();
+        Map<Coord, Boolean> shipPlacement = new HashMap<>();
         for (Coord coord : coords) {
             for (int i = 0; i < gameBoard.length; i++) {
                 if (gameBoard[i].getCoord().equals(coord)) {
                     // ensure the ship does not occupy the place that's already occupied
                     if (gameBoard[i].getLocStatus().equals(LocStatus.EMPTY)) {
                         gameBoard[i].setLocStatus(LocStatus.OCCUPIED);
-                        shipPlacement.add(coord);
+                        shipPlacement.put(coord, false);
                     } else {
                         throw new InvalidShipLocException(
                                 "Invalid ship location - " + coords + " - " + "location is already occupied");
@@ -151,13 +151,27 @@ public class Board {
                 if (locStatus.equals(LocStatus.EMPTY)) {
                     gameBoard[i].setLocStatus(LocStatus.MISS);
                 } else if (locStatus.equals(LocStatus.OCCUPIED)) {
+                    // update board
                     gameBoard[i].setLocStatus(LocStatus.HIT);
                     hits++;
 
                     // update the ships as well
                     Coord hitCoord = hitLoc.getCoord();
-                    for (List<Coord> shipCondition : ships.values()) {
-                        shipCondition.remove(hitCoord);
+                    for (Map<Coord, Boolean> shipCondition : ships.values()) {
+                        if (shipCondition.get(hitCoord) != null) {
+                            shipCondition.put(hitCoord, true);
+
+                            // if all the coordinates of the ship are hit
+                            if (!shipCondition.values().contains(false)) {
+                                // ship is sank, update location status to SANK
+                                for (Coord shipCoord : shipCondition.keySet()) {
+                                    int j = (shipCoord.toString().charAt(0) - 'A') * 10
+                                            + (shipCoord.toString().charAt(1) - '1');
+                                    gameBoard[j].setLocStatus(LocStatus.SANK);
+                                    System.out.println(gameBoard[j]);
+                                }
+                            }
+                        }
                     }
                 } else {
                     throw new InvalidFireLocException(

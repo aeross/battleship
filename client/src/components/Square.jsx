@@ -12,6 +12,9 @@ function Square({ url, square }) {
                 case "HIT":
                     setStatus("bg-red-400");
                     break;
+                case "SANK":
+                    setStatus("bg-red-600");
+                    break;
                 case "MISS":
                     setStatus("bg-blue-400");
                     break;

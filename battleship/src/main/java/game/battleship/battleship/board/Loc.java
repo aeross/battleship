@@ -25,4 +25,9 @@ public class Loc {
     public void setLocStatus(LocStatus locStatus) {
         this.locStatus = locStatus;
     }
+
+    @Override
+    public String toString() {
+        return "{ coord: " + this.coord + ", locStatus: " + this.locStatus.toString() + " }";
+    }
 }
