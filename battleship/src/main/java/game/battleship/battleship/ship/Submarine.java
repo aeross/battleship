@@ -21,17 +21,6 @@ public class Submarine extends Ship {
 
     @Override
     public void setLoc(List<Coord> loc) throws InvalidShipLocException {
-        // size 4
-        if (loc.size() != SIZE) {
-            throw new InvalidShipLocException("Invalid ship location - " + loc);
-        }
-
-        // check if valid
-        boolean isValidLoc = this.validateLoc(loc);
-        if (!isValidLoc) {
-            throw new InvalidShipLocException("Invalid ship location - " + loc);
-        }
-
-        this.loc = loc;
+        super.setLoc(loc, SIZE);
     }
 }

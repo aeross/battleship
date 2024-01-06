@@ -58,6 +58,22 @@ public abstract class Ship {
         return true;
     }
 
+    protected void setLoc(List<Coord> loc, int size) throws InvalidShipLocException {
+        // size 4
+        if (loc.size() != size) {
+            throw new InvalidShipLocException("Invalid ship location - " + loc);
+        }
+
+        // check if valid
+        boolean isValidLoc = this.validateLoc(loc);
+        if (!isValidLoc) {
+            throw new InvalidShipLocException("Invalid ship location - " + loc);
+        }
+
+        this.loc = loc;
+
+    }
+
     // abstract methods
     abstract public void setLoc(List<Coord> loc) throws InvalidShipLocException;
 }
