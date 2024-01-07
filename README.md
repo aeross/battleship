@@ -14,7 +14,7 @@ Well, this is a game where you play single-player battleship. Instead of the usu
 
 1. **Boot up the server**
 
-Go to `/battleship/src/main/java/game/battleship` and run `BattleshipApplication.java`. Make sure you have Java 21 installed.
+Go to `/battleship/src/main/java/game/battleship/battleship` and run `BattleshipApplication.java`. Make sure you have Java 21 installed.
 
 2. **Boot up the client**
 
