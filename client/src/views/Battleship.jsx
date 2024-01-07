@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import Controller from '../controllers/controller';
-import Board from '../components/Board';
 import Square from '../components/Square';
 
 function Battleship({ url }) {
@@ -29,31 +28,46 @@ function Battleship({ url }) {
         })();
     }, []);
 
+    // calling setShips() in Square.jsx will trigger board re-render
     useEffect(() => {
         (async () => {
             const response = await Controller.getBoard(url);
             if (response.ok) {
                 const board = await response.json();
-                setBoard(board);
+                setBoard(board);  // trigger board re-render, which will also re-render each square
             }
         })();
     }, [ships])
 
     return (
-        <div className="w-full min-h-screen bg-gray-50 flex justify-center items-center">
-            <div className="grid grid-cols-10">
-                {
-                    board?.map(square => {
-                        return <Square key={square.coord} url={url} square={square} ship={{ ships, setShips }} />
-                    })
-                }
+        <div className="w-full min-h-screen flex justify-center items-center">
+            <div className="grid grid-cols-[2fr_5fr_2fr] gap-4">
+                <div className=" bg-slate-100 rounded border border-slate-500 shadow-sm shadow-slate-500 flex flex-col min-w-32 p-3">
+                    <h2 className="mb-2 pb-2 border-b border-slate-400 font-bold text-slate-600">SHIPS</h2>
+                    {
+                        ships && Object.keys(ships).map(ship => {
+                            let shipStatus = ships[ship] ? "" : "line-through text-opacity-60"
+                            return (<>
+                                <span key={ship} className={`lowercase font-semibold my-1 text-slate-700 ${shipStatus}`}>
+                                    {ship}
+                                </span>
+                            </>)
+                        })
+                    }
+                </div>
+
+                <div className="grid grid-cols-10 shadow-md border border-slate-600 rounded-md">
+                    {
+                        board?.map(square => {
+                            return <Square key={square.coord} url={url} square={square} ship={{ ships, setShips }} />
+                        })
+                    }
+                </div>
+
+                <div className="bg-slate-100 rounded border border-slate-500 shadow-sm shadow-slate-500 flex flex-col min-w-32 p-3">
+                    <h2 className="mb-2 pb-2 border-b border-slate-400 font-bold text-slate-600">STATS</h2>
+                </div>
             </div>
-            {
-                // ships?.map(ship => {
-                //     return <li key={ship}>{ship}</li>
-                // })
-                console.log(ships)
-            }
         </div>
     )
 }

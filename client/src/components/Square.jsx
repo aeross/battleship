@@ -5,6 +5,7 @@ function Square({ url, square, ship }) {
     const { ships, setShips } = ship;
     const [status, setStatus] = useState("bg-sky-300");
 
+    // update square colour on every board re-render
     useEffect(() => {
         switch (square.locStatus) {
             case "HIT":
@@ -14,7 +15,7 @@ function Square({ url, square, ship }) {
                 setStatus("bg-red-600");
                 break;
             case "MISS":
-                setStatus("bg-blue-400");
+                setStatus("bg-blue-500");
                 break;
         }
     }, [square])
@@ -30,11 +31,11 @@ function Square({ url, square, ship }) {
                 case "SANK":
                     // re-fetch all ships
                     const response = await Controller.getShips(url);
-                    setShips(response);
+                    setShips(response);  // this will trigger board re-render
                     setStatus("bg-red-600");
                     break;
                 case "MISS":
-                    setStatus("bg-blue-400");
+                    setStatus("bg-blue-500");
                     break;
             }
         } else {
@@ -43,12 +44,30 @@ function Square({ url, square, ship }) {
         }
     }
 
+    // apply rounded property on board edges
+    let rounded = "";
+    switch (square.coord) {
+        case "A1":
+            rounded = "rounded-tl";
+            break;
+        case "A10":
+            rounded = "rounded-tr";
+            break;
+        case "J1":
+            rounded = "rounded-bl";
+            break;
+        case "J10":
+            rounded = "rounded-br";
+            break;
+        default:
+            break;
+    }
+
     return (
         <button
-            className={`p-1 border text-center ${status}`}
+            className={`p-1 border border-slate-600 h-10 w-10 text-center ${status} ${rounded}`}
             onClick={handleClick}
         >
-            {square.coord}
         </button>
     )
 }
