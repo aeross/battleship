@@ -167,7 +167,7 @@ public class Board {
                                     int j = (shipCoord.toString().charAt(0) - 'A') * 10
                                             + (shipCoord.toString().charAt(1) - '1');
                                     gameBoard[j].setLocStatus(LocStatus.SANK);
-                                    System.out.println(gameBoard[j]);
+                                    // System.out.println(gameBoard[j]);
                                 }
                             }
                         }

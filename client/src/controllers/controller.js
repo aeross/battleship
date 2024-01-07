@@ -60,6 +60,11 @@ class Controller {
         });
         return response;
     }
+
+    static async isGameOver(url) {
+        const resStarted = await fetch(`${url}/api/is-started`);
+        const resPlaced = await fetch(`${url}/api/is-placed`);
+    }
 }
 
 export default Controller;
