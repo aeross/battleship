@@ -25,26 +25,27 @@ public abstract class Ship {
         // i.e., horizontal or vertical
 
         char checkHorizontal = loc.get(0).toString().charAt(0);
-        char checkVertical = loc.get(0).toString().charAt(1);
+        int checkVertical = Integer.parseInt(loc.get(0).toString().substring(1));
 
         for (Coord l : loc) {
             // skip the first element because it's extracted already (above)
             if (l.equals(loc.get(0)))
                 continue;
 
-            String locStr = l.toString();
+            char currHorizontal = l.toString().charAt(0);
+            int currVertical = Integer.parseInt(l.toString().substring(1));
 
             // Horizontal check
-            if ((locStr.charAt(0) == checkHorizontal)) {
-                if (locStr.charAt(1) != checkVertical + 1) {
+            if (currHorizontal == checkHorizontal) {
+                if (currVertical != checkVertical + 1) {
                     return false;
                 }
                 checkVertical++;
             }
 
             // Vertical check
-            else if ((locStr.charAt(1) == checkVertical)) {
-                if (locStr.charAt(0) != checkHorizontal + 1) {
+            else if (currVertical == checkVertical) {
+                if (currHorizontal != checkHorizontal + 1) {
                     return false;
                 }
                 checkHorizontal++;

@@ -23,11 +23,13 @@ function Battleship({ url }) {
 
             // place all the ships at random
             // we have: "Carrier", "Battleship", "Cruiser", "Submarine", "Destroyer"
-            await Controller.placeShip(url, "Carrier", ["A1", "A2", "A3", "A4", "A5"]);
-            await Controller.placeShip(url, "Battleship", ["B3", "B4", "B5", "B6"]);
-            await Controller.placeShip(url, "Cruiser", ["F5", "G5", "H5"]);
-            await Controller.placeShip(url, "Submarine", ["D3", "D4", "D5"]);
-            await Controller.placeShip(url, "Destroyer", ["I7", "J7"]);
+            // await Controller.placeShip(url, "Carrier", ["A6", "A7", "A8", "A9", "A10"]);
+            // await Controller.placeShip(url, "Battleship", ["B3", "B4", "B5", "B6"]);
+            // await Controller.placeShip(url, "Cruiser", ["F5", "G5", "H5"]);
+            // await Controller.placeShip(url, "Submarine", ["D3", "D4", "D5"]);
+            // await Controller.placeShip(url, "Destroyer", ["I9", "I10"]);
+
+            await Controller.placeAllShipsRandomly(url);
             await Controller.confirmPlacement(url);
 
             const responseShips = await Controller.getShips(url);
@@ -43,18 +45,21 @@ function Battleship({ url }) {
                 const board = await response.json();
                 setBoard(board);  // trigger board re-render, which will also re-render each square
             }
+
+            // also check if all ships are sunk
+            const isGameOver = await Controller.isGameOver(url);
+            setIsGameOver(isGameOver);
         })();
     }, [ships])
 
-
-    return (
+    return (<>
         <div className="w-full min-h-screen flex justify-center items-center text-slate-600">
             <div className="grid grid-cols-[2fr_5fr_2fr] gap-4">
                 <div className=" bg-slate-100 rounded border border-slate-500 shadow-sm shadow-slate-500 flex flex-col min-w-32 p-3">
                     <h2 className="mb-2 pb-2 border-b border-slate-400 font-bold">SHIPS</h2>
                     {
                         ships && Object.keys(ships).map(ship => {
-                            let shipStatus = ships[ship] ? "" : "line-through text-opacity-60"
+                            let shipStatus = ships[ship] ? "" : "line-through text-opacity-60";
                             return (<>
                                 <span key={ship} className={`lowercase font-semibold my-1 ${shipStatus}`}>
                                     {ship}
@@ -89,13 +94,25 @@ function Battleship({ url }) {
                         </div>
                     </div>
                     <div>
-                        {/* <h2 className="mb-2 font-bold">GAME OVER</h2> */}
-                        <div className="font-semibold">score: {Math.round(moves ? (hits * 100 / moves) : 0)}</div>
+                        {isGameOver && <h2 className="mb-2 font-bold">GAME OVER</h2>}
+
+                        <div className="font-semibold flex justify-between pr-2 pb-1">
+                            <span>score</span>
+                            <span>{Math.round(moves ? (hits * 100 / moves) : 0)}</span>
+                        </div>
+                        {isGameOver &&
+                            <button
+                                className="text-xs font-semibold m-0 hover:underline text-blue-600"
+                                onClick={() => { window.location.reload() }}
+                            >
+                                play again?
+                            </button>}
                     </div>
                 </div>
             </div>
         </div>
-    )
+
+    </>)
 }
 
 export default Battleship

@@ -165,7 +165,7 @@ public class Board {
                                 // ship is sank, update location status to SANK
                                 for (Coord shipCoord : shipCondition.keySet()) {
                                     int j = (shipCoord.toString().charAt(0) - 'A') * 10
-                                            + (shipCoord.toString().charAt(1) - '1');
+                                            + (Integer.parseInt(shipCoord.toString().substring(1)) - 1);
                                     gameBoard[j].setLocStatus(LocStatus.SANK);
                                     // System.out.println(gameBoard[j]);
                                 }
